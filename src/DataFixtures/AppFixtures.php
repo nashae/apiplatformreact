@@ -47,7 +47,7 @@ class AppFixtures extends Fixture
                 for($i = 0; $i < mt_rand(3,10); $i++){
                     $invoice = new Invoice();
                     $invoice->setAmount($faker->randomFloat(2, 200, 1000))
-                            ->setSentAt($faker->dateTimeBetween('-6monts', 'now'))
+                            ->setSentAt($faker->dateTimeBetween('-6 months', 'now'))
                             ->setStatus($faker->randomElement(['SENT', 'PAID', 'CANCELLED']))
                             ->setCustomer($customer)
                             ->setChrono($chrono);
