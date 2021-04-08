@@ -1,12 +1,16 @@
-import React from 'react';
+import React, { useContext, useState } from 'react';
 import ReactDOM from "react-dom";
-import { HashRouter, Route, Switch } from "react-router-dom";
+import { HashRouter, Redirect, Route, Switch, withRouter } from "react-router-dom";
 // start the Stimulus application
 import './bootstrap';
 import Navbar from './js/components/Navbar';
+import PrivateRoute from './js/components/PrivateRoute';
+import AuthContexts from './js/contexts/AuthContexts';
 import CustomersPage from './js/pages/CustomersPage';
 import Homepage from './js/pages/Homepage';
 import InvoicesPage from './js/pages/InvoicesPage';
+import LoginPage from './js/pages/LoginPage';
+import authAPI from './js/services/authAPI';
 /*
  * Welcome to your app's main JavaScript file!
  *
@@ -16,24 +20,34 @@ import InvoicesPage from './js/pages/InvoicesPage';
 // any CSS you import will output into a single css file (app.css in this case)
 import './styles/app.css';
 
+authAPI.setup();
 
-
-
-console.log('hello worl')
 
 const App = () => {
-    return <>
-        <HashRouter>
-            <Navbar />
-            <main className="container pt-5">
-                <Switch>
-                    <Route path="/invoices" component={InvoicesPage} />
-                    <Route path="/customers" component={CustomersPage} />
-                    <Route path="/" exact component={Homepage} />
-                </Switch>
-            </main>
-        </HashRouter>
-    </>
+    const [isAuthenticated, setIsAuthenticated] = useState(authAPI.isAuthenticated());
+
+    const NavbarWithRouter = withRouter(Navbar);
+
+    const contextValue= {
+        isAuthenticated: isAuthenticated,
+        setIsAuthenticated: setIsAuthenticated
+    }
+
+    return (
+        <AuthContexts.Provider value={contextValue}>
+            <HashRouter>
+                <NavbarWithRouter/>
+                <main className="container pt-5">
+                    <Switch>
+                        <Route path="/login" component={LoginPage} />
+                        <PrivateRoute path="/invoices" component={InvoicesPage} />
+                        <PrivateRoute path="/customers" component={CustomersPage} />
+                        <Route path="/" exact component={Homepage} />
+                    </Switch>
+                </main>
+            </HashRouter>
+        </AuthContexts.Provider>
+    );
 };
 
 const rootElement = document.querySelector('#app');
