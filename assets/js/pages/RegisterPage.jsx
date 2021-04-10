@@ -1,6 +1,7 @@
 import axios from "axios";
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import { toast } from "react-toastify";
 import Field from "../components/forms/Field";
 import usersAPI from "../services/usersAPI";
 
@@ -36,13 +37,14 @@ const RegisterPage = ({history}) => {
         if(user.password !== user.passwordConfirm){
             apiErrors.passwordConfirm = "Les mots de passe ne sont pas identiques";
             setErrors(apiErrors);
+            toast.error("Inscription invalide");
             return;
         }
 
         try{
             await usersAPI.register(user);
-            //TODO flash
             setErrors({})
+            toast.success("Vous etes désormais incrit")
             history.replace('/login')
         }catch(error){
             console.log(error.response);
@@ -53,6 +55,7 @@ const RegisterPage = ({history}) => {
                 });
                 setErrors(apiErrors);
             }
+            toast.error("Inscription invalide");
         }
         console.log(user);
     }

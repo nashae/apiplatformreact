@@ -1,6 +1,7 @@
 import React, { useContext, useState } from 'react';
 import ReactDOM from "react-dom";
 import { HashRouter, Redirect, Route, Switch, withRouter } from "react-router-dom";
+import { Slide, toast, ToastContainer } from 'react-toastify';
 // start the Stimulus application
 import './bootstrap';
 import Navbar from './js/components/Navbar';
@@ -14,6 +15,8 @@ import InvoicesPage from './js/pages/InvoicesPage';
 import LoginPage from './js/pages/LoginPage';
 import RegisterPage from './js/pages/RegisterPage';
 import authAPI from './js/services/authAPI';
+import 'react-toastify/dist/ReactToastify.css';
+
 /*
  * Welcome to your app's main JavaScript file!
  *
@@ -52,6 +55,7 @@ const App = () => {
                     </Switch>
                 </main>
             </HashRouter>
+            <ToastContainer position={toast.POSITION.BOTTOM_RIGHT} transition={Slide} />
         </AuthContexts.Provider>
     );
 };

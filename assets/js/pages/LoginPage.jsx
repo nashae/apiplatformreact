@@ -1,4 +1,5 @@
 import React, { useContext, useState } from "react";
+import { toast } from "react-toastify";
 import Field from "../components/forms/Field";
 import AuthContexts from "../contexts/AuthContexts";
 import AuthAPI from "../services/authAPI";
@@ -29,10 +30,12 @@ const LoginPage = ({history}) => {
             await AuthAPI.authenticate(credentials);
             setError('');
             setIsAuthenticated(true);
+            toast.success("Vous êtes connecté")
             history.replace("/customers");
         } catch (error){
             console.log(error.response);
             setError('informations incorrectes')
+            toast.error("une erreur est survenue");
         }
     }
 

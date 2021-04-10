@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import Field from '../components/forms/Field';
+import FormContentLoader from '../components/loaders/FormContentLoader';
 import customersAPI from '../services/customersAPI';
 
 const CustomerPage = ({match, history}) => {
@@ -23,14 +25,17 @@ const CustomerPage = ({match, history}) => {
 
     const [editing, setEditing] = useState(false);
 
+    const [loading, setLoading] = useState(false);
+
     //recuperation du customer en fonction de l'id
     const fetchCustomer = async id => {
         try {
             const { firstName, lastName, email, company } = await customersAPI.find(id);
             setCustomer({firstName, lastName, email, company});
+            setLoading(false);
         } catch(error) {
             console.log(error.response);
-            //TODO flash
+            toast.error("le client n'a pas pu être chargé");
             history.replace("/customers");
         }
     }
@@ -38,6 +43,7 @@ const CustomerPage = ({match, history}) => {
     //chargemet du customer si present au charement ou en cas de modif d'id
     useEffect(() => {
         if(id !== "new"){ 
+            setLoading(true);
             setEditing(true);
             fetchCustomer(id);
         }
@@ -55,13 +61,13 @@ const CustomerPage = ({match, history}) => {
         try {
             if(editing) {
                 const response = await customersAPI.update(id, customer);
-                //TODO flash
+                toast.success("le client à été modifié");
             } else {
                 const response = await customersAPI.create(customer);
-                //TODO flash
-                history.replace("/customers");
+                toast.success("le client a été crée");
             }
             setError({});
+            history.replace("/customers");
         } catch(error){
             if(error.response.data.violations){
                 const apiErrors = {};
@@ -69,7 +75,7 @@ const CustomerPage = ({match, history}) => {
                     apiErrors[violation.propertyPath] = violation.message;
                 });
                 setError(apiErrors);
-                //TODO flash
+                toast.error("échec")
             }
         }
         
@@ -77,6 +83,7 @@ const CustomerPage = ({match, history}) => {
 
     return ( <>
     {!editing && <h1>Création d'un client</h1> || <h1>Modification d'un client</h1>}
+    {!loading && (
     <form onSubmit={handleSubmit}>
         <Field 
             name="lastName"
@@ -116,6 +123,8 @@ const CustomerPage = ({match, history}) => {
             <Link to="/customers" className="btn btn-info ml-2">Retour à la liste</Link>
         </div>
     </form>
+    )}
+    {loading && <FormContentLoader />}
     </> );
 }
  
